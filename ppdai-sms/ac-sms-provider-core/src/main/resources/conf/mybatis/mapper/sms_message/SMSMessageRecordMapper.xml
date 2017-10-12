@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ppdai.ac.sms.provider.core.dao.mapper.smsmessage.SmsMessageRecordMapper">
+
+    <update id="updateRecordExtByRecordId">
+        update smsmessagerecord
+        set RecordExt = #{recordExt,jdbcType=VARCHAR},UpdateTime=#{updateTime}
+        <where>
+              RecordId = #{recordId}
+              AND (insertTime BETWEEN #{startTime} AND #{endTime})
+        </where>
+    </update>
+
+    <update id="updateStatusByRecordExt">
+        update smsmessagerecord
+        set Status = #{status,jdbcType=INTEGER},UpdateTime=#{updateTime}
+        <where>
+            RecordExt = #{recordExt}
+            AND (insertTime BETWEEN #{startTime} AND #{endTime})
+        </where>
+    </update>
+
+
+    <update id="updateStatusByRecordId">
+        update smsmessagerecord
+        set Status = #{status,jdbcType=INTEGER},UpdateTime=#{updateTime}
+        <where>
+            RecordId = #{recordId}
+            AND (insertTime BETWEEN #{startTime} AND #{endTime})
+        </where>
+    </update>
+
+    <select id="getRecordByRecordId"  resultType="com.ppdai.ac.sms.provider.core.model.entity.SMSMessageRecordDTO">
+       SELECT * FROM smsmessagerecord WHERE recordId = #{recordId} AND (insertTime BETWEEN #{startTime} AND #{endTime}) AND IsActive = 1 limit 1
+    </select>
+
+
+
+    <select id="getRecordByRecordExt"  resultType="com.ppdai.ac.sms.provider.core.model.entity.SMSMessageRecordDTO">
+        SELECT * FROM smsmessagerecord WHERE recordExt = #{recordExt} AND (insertTime BETWEEN #{startTime} AND #{endTime}) AND IsActive = 1 limit 1
+    </select>
+
+    <select id="getRecordBeforeSometime" parameterType="com.ppdai.ac.sms.provider.core.model.entity.SMSMessageRecordDTO" resultType="com.ppdai.ac.sms.provider.core.model.entity.SMSMessageRecordDTO">
+         SELECT * FROM smsmessagerecord
+         <where>
+             IsActive = 1
+             <if test="providerId != null">
+                and  ProviderId = #{providerId,jdbcType=INTEGER}
+             </if>
+             <if test="status != null">
+                 and  Status = #{status,jdbcType=INTEGER}
+             </if>
+             <if test="insertTime != null">
+                 <![CDATA[ and insertTime <  #{insertTime,jdbcType=TIMESTAMP} ]]>
+             </if>
+         </where>
+         limit 100
+    </select>
+
+    <select id="getNeedToSolvedRecord" resultType="com.ppdai.ac.sms.provider.core.model.entity.SMSMessageRecordDTO">
+        SELECT * FROM smsmessagerecord
+        where
+            IsActive = 1
+            and  ProviderId = #{providerId,jdbcType=INTEGER}
+            and  Status in (-1,1)
+            and (insertTime BETWEEN #{startTime} AND #{endTime})
+        limit 100
+    </select>
+
+</mapper>

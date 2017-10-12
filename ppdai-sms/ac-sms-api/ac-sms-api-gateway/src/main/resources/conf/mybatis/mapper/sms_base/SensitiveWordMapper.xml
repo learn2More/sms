@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ppdai.ac.sms.api.gateway.dao.mapper.smsbase.SensitiveWordMapper">
+
+    <select id="finAll" resultType="com.ppdai.ac.sms.api.gateway.model.entity.SensitiveWordDTO">
+        SELECT * FROM SensitiveWord WHERE IsActive = 1
+    </select>
+
+    <select id="finAllWord" resultType="String">
+        SELECT Word FROM SensitiveWord WHERE IsActive = 1
+    </select>
+</mapper>

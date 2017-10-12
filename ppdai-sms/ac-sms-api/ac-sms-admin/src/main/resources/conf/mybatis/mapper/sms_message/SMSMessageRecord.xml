@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ppdai.ac.sms.contract.dao.mapper.smsmessage.MessageRecordMapper">
+
+    <resultMap id="messageRecordMap" type="com.ppdai.ac.sms.contract.model.vo.MessageVo">
+        <id column="messageId" property="messageId" />
+        <result column="Recipient" property="mobile" />
+        <result column="status" property="status" />
+        <result column="templateId" property="templateId" />
+        <result column="callerId" property="callerId" />
+        <result column="content" property="content" />
+        <result column="businessId" property="businessId" />
+
+    </resultMap>
+
+    <!--查询短信 or 语音消息记录-->
+    <select id="getMessageRecordByparam"  resultMap="messageRecordMap">
+        select * from smsmessagerecord  where (insertTime BETWEEN #{beginTime} AND #{endTime})
+        and messageId in
+        (
+        <foreach collection="list" index="index" item="item" separator=",">
+            #{item.messageId}
+        </foreach>
+        )
+        ORDER BY InsertTime desc limit #{page.pageNum,jdbcType=INTEGER},#{page.pageSize,jdbcType=INTEGER}
+      </select>
+
+    <!--查询短信 or 语音消息总条数-->
+    <select id="getMessageRecordCountByparam"  resultType="int">
+        select count(*) from smsmessagerecord  where  (insertTime BETWEEN #{beginTime} AND #{endTime})
+        and messageId in
+        (
+        <foreach collection="list" index="index" item="item" separator=",">
+            #{item.messageId}
+        </foreach>
+        )
+
+    </select>
+
+    <resultMap id="messageRecordList" type="com.ppdai.ac.sms.contract.model.vo.MessageReportVo">
+        <id column="RecordId" property="recordId" />
+        <id column="messageId" property="messageId" />
+        <result column="providerId" property="providerId" />
+        <result column="MessageCount" property="messageCount" />
+        <result column="SendResult" property="sendResult" />
+        <result column="SendTime" property="sendTime" />
+    </resultMap>
+    <!--根据messageid查询消息记录-->
+    <select id="getMessageRecordByMessageId"  resultMap="messageRecordList">
+        select * from smsmessagerecord  where (insertTime BETWEEN #{beginTime} AND #{endTime}) and messageId =#{messageId} ORDER BY InsertTime desc
+    </select>
+
+  </mapper>

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+    <jmxConfigurator/>
+
+    <springProfile name="dev,test">
+        <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+            <layout class="ch.qos.logback.classic.PatternLayout">
+                <pattern>%date [%thread] %-5level %logger{80}- %msg%n</pattern>
+            </layout>
+        </appender>
+
+        <appender name="KafkaAppender" class="com.ppdai.logmetric.appender.KafkaAppender">
+            <encoder>
+                <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+            </encoder>
+            <settings>bootstrap.servers=172.17.2.134:9092,172.17.2.135:9092,172.17.2.136:9092</settings>
+            <settings>topic=testLog</settings>
+            <appid>1000000166</appid>
+        </appender>
+         <root>
+            <level value="info"/>
+            <appender-ref ref="stdout"/>
+            <appender-ref ref="KafkaAppender"/>
+        </root>
+        <logger name="com.dangdang.ddframe.rdb.sharding.router" level="DEBUG" additivity="false">
+            <appender-ref ref="stdout"/>
+        </logger>
+    </springProfile>
+
+
+    <springProfile name="uat">
+        <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+            <layout class="ch.qos.logback.classic.PatternLayout">
+                <pattern>%date [%thread] %-5level %logger{80}- %msg%n</pattern>
+            </layout>
+        </appender>
+
+        <appender name="KafkaAppender" class="com.ppdai.logmetric.appender.KafkaAppender">
+            <encoder>
+                <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+            </encoder>
+            <settings>bootstrap.servers=172.17.76.154:9092,172.17.76.155:9092,172.17.76.156:9092</settings>
+            <settings>topic=framework.log</settings>
+            <appid>1000000166</appid>
+        </appender>
+
+        <root>
+            <level value="info"/>
+            <appender-ref ref="stdout"/>
+            <appender-ref ref="KafkaAppender"/>
+        </root>
+    </springProfile>
+
+
+    <springProfile name="prod">
+        <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+            <layout class="ch.qos.logback.classic.PatternLayout">
+                <pattern>%date [%thread] %-5level %logger{80}- %msg%n</pattern>
+            </layout>
+        </appender>
+
+        <appender name="KafkaAppender" class="com.ppdai.logmetric.appender.KafkaAppender">
+            <encoder>
+                <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+            </encoder>
+            <settings>bootstrap.servers=elkkafka052135.idc1.ppd:9092,elkkafka052136.idc1.ppd:9092,elkkafka052137.idc1.ppd:9092,elkkafka052138.idc1.ppd:9092,elkkafka052139.idc1.ppd:9092,elkkafka052140.idc1.ppd:9092,elkkafka052141.idc1.ppd:9092,elkkafka052142.idc1.ppd:9092,elkkafka052143.idc1.ppd:9092,elkkafka052144.idc1.ppd:9092,elkkafka052145.idc1.ppd:9092,elkkafka052146.idc1.ppd:9092,elkkafka052147.idc1.ppd:9092,elkkafka052148.idc1.ppd:9092,elkkafka052149.idc1.ppd:9092</settings>
+            <settings>topic=framework.log</settings>
+            <appid>1000000166</appid>
+        </appender>
+
+        <root>
+            <level value="info"/>
+            <appender-ref ref="stdout"/>
+            <appender-ref ref="KafkaAppender"/>
+        </root>
+    </springProfile>
+
+
+</configuration>

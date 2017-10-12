@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ppdai.ac.sms.contract.dao.mapper.smsbase.DepartmentMapper">
+
+    <select id="findDepartmentById" parameterType="Integer"  resultType="com.ppdai.ac.sms.contract.model.entity.DepartmentDTO">
+        SELECT *  FROM department WHERE DepartmentId = #{departmentId} and IsActive=1
+    </select>
+
+    <insert id="saveDepartment" parameterType="com.ppdai.ac.sms.contract.model.entity.DepartmentDTO"  useGeneratedKeys="true" keyProperty="departmentId" keyColumn="departmentId">
+        INSERT INTO department(DepartmentName,ParentDepartmentId,Level,Owner,OwnerEmail,jobId,IsActive,InsertTime,updateTime)
+        VALUES(#{departmentName},#{parentId},#{level},#{ownerName},#{ownerEmail},#{ownerJobId},1,NOW(),NOW())
+    </insert>
+
+
+    <resultMap id="departmentMap" type="com.ppdai.ac.sms.contract.model.entity.DepartmentDTO">
+        <result column="DepartmentId" property="departmentId" />
+        <result column="DepartmentName" property="departmentName" />
+        <result column="ParentDepartmentId" property="parentId" />
+        <result column="Level" property="level" />
+        <result column="Owner" property="ownerName" />
+        <result column="OwnerEmail" property="ownerEmail" />
+        <result column="InsertTime" property="insertTime" />
+        <result column="UpdateTime" property="updateTime" />
+        <result column="jobId" property="ownerJobId" />
+    </resultMap>
+
+
+    <select id="getDepartment" parameterType="Integer"  resultMap="departmentMap">
+        SELECT *  FROM department
+        <where>
+            IsActive =1
+            <if test="parentId != null">
+                and ParentDepartmentId= #{parentId}
+            </if>
+        </where>
+
+    </select>
+
+    <update id="editDepartment" parameterType="com.ppdai.ac.sms.contract.model.entity.DepartmentDTO">
+        UPDATE Department
+        SET  departmentName=#{departmentName},parentDepartmentId =#{parentId},level =#{level},
+              owner =#{ownerName},ownerEmail =#{ownerEmail},jobId =#{ownerJobId},updateTime=NOW()
+        WHERE departmentId=#{departmentId}
+    </update>
+
+    <update id="delDepartment">
+        UPDATE Department
+        SET  IsActive=0
+        WHERE DepartmentId=#{departmentId}
+    </update>
+</mapper>

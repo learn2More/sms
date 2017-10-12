@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ppdai.ac.sms.consumer.core.dao.mapper.smsbase.ProviderConfigMapper">
+
+    <select id="findProviderConfigByProviderId" parameterType="Integer" resultType="com.ppdai.ac.sms.consumer.core.model.entity.ProviderConfigDTO">
+       SELECT
+        a.*, b.ProviderName
+        FROM
+            ProviderAccountConfig a
+        LEFT JOIN provider b ON a.ProviderId = b.ProviderId
+        WHERE
+            a.providerId =#{providerId}
+        AND a.IsActive = 1
+    </select>
+</mapper>

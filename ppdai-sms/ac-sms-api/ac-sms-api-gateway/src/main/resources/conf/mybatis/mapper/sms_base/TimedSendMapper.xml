@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ppdai.ac.sms.api.gateway.dao.mapper.smsbase.TimedSendMapper">
+
+    <select id="getTimedSendList" parameterType="com.ppdai.ac.sms.api.gateway.request.TimedSendQuery"
+            resultType="com.ppdai.ac.sms.api.gateway.model.entity.TimedSendDTO">
+        SELECT * FROM timedsend
+        <where>
+            IsActive = 1
+            <if test="businessAlias != null">
+                and BusinessAlias = #{businessAlias,jdbcType=VARCHAR}
+            </if>
+            <if test="templateAlias != null">
+                and TemplateAlias = #{templateAlias,jdbcType=VARCHAR}
+            </if>
+            <if test="isSend != null">
+                and IsSend = #{isSend,jdbcType=INTEGER}
+            </if>
+            <if test="insertTime != null">
+                <![CDATA[ and insertTime >  #{insertTime,jdbcType=TIMESTAMP} ]]>
+            </if>
+            <if test="timing != null">
+                <![CDATA[ and Timing <=  #{timing,jdbcType=TIMESTAMP} ]]>
+            </if>
+        </where>
+        <choose>
+            <when test="limitNum != null">
+                limit  #{limitNum,jdbcType=INTEGER}
+            </when>
+            <otherwise>
+                limit  100
+            </otherwise>
+        </choose>
+    </select>
+
+    <insert id="batchSaveTimedSend" parameterType="com.ppdai.ac.sms.api.gateway.request.TimedSendSave">
+        INSERT INTO timedsend(BusinessAlias,
+        TemplateAlias,
+        CallerId,
+        Recipient,
+        Content,
+        RequestIp,
+        RequestUrl,
+        Directory,
+        Hostname,
+        RecipientIp,
+        IsTimed,
+        IsSend,
+        IsActive,
+        Remark,
+        Timing,
+        InsertTime,
+        UpdateTime)
+        VALUES
+        <foreach collection="timedSendList" item="item" index="index" separator=",">
+            (#{businessAlias,jdbcType=VARCHAR},#{templateAlias,jdbcType=VARCHAR},
+            #{callerId,jdbcType=INTEGER},
+            #{item.recipient},#{item.content},
+            #{requestIp,jdbcType=VARCHAR},#{requestUrl,jdbcType=VARCHAR},
+            #{directory,jdbcType=VARCHAR},#{hostName,jdbcType=VARCHAR},#{recipientIp,jdbcType=VARCHAR},
+            #{isTimed,jdbcType=INTEGER},#{isSend,jdbcType=INTEGER},1,#{remark,jdbcType=VARCHAR},
+            #{timing,jdbcType=TIMESTAMP},NOW(),NOW())
+        </foreach>
+    </insert>
+
+    <update id="updateIsSendByIds">
+        update timedsend a set  a.IsSend=#{isSend,jdbcType=INTEGER}
+        <where>
+            IsActive = 1
+            and TimedSendId IN
+            <foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </where>
+    </update>
+
+    <update id="BatchUpdateSendResult" parameterType="java.util.List">
+        <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+            update timedsend a
+            <set>
+                a.IsSend=#{item.isSend},
+                a.Remark=#{item.remark,jdbcType=VARCHAR}
+            </set>
+            <where>
+                IsActive = 1
+                and
+                TimedSendId = ${item.timedSendId}
+            </where>
+        </foreach>
+    </update>
+</mapper>

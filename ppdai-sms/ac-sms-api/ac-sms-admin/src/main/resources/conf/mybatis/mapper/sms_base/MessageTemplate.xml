@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ppdai.ac.sms.contract.dao.mapper.smsbase.MessageTemplateMapper">
+
+    <insert id="saveMessageTemplate" parameterType="com.ppdai.ac.sms.contract.model.entity.MessageTemplateDTO" useGeneratedKeys="true" keyProperty="templateId" keyColumn="TemplateId">
+        INSERT INTO MessageTemplate(businessId,departmentId,callerId,templateName,templateAlias,messageKind,content,filterRule,intervalTime,totalMaxCount,MaxCount,isActive,insertTime,updateTime)
+        VALUES(#{businessId},#{departmentId},#{callerId},#{templateName},#{templateAlias},#{messageKind},#{content},#{filterRule},#{intervalTime},#{totalMaxCount},#{maxCount},1,NOW(),NOW())
+    </insert>
+
+    <select id="getTemplateCheckCount" parameterType="Integer"  resultType="int">
+        select count(*) from messagetemplate as t
+        <where>
+            t.isActive in (0,1)
+            <if test="departmentId != null">
+                and t.DepartmentID= #{departmentId}
+            </if>
+            <if test="businessId != null">
+                and t.businessId= #{businessId}
+            </if>
+            <if test="messageKind != null">
+                and t.MessageKind= #{messageKind}
+            </if>
+            <if test="templateStatus != null">
+                and t.isActive= #{templateStatus}
+            </if>
+        </where>
+    </select>
+
+    <resultMap id="TemplateCheckList" type="com.ppdai.ac.sms.contract.model.vo.TemplateCheckVo">
+        <id column="templateId" property="templateId" />
+        <result column="templateName" property="title" />
+        <result column="departmentId" property="departmentId" />
+        <result column="businessId" property="businessId" />
+        <result column="messageKind" property="messageKind" />
+        <result column="content" property="templateContent" />
+        <result column="intervalTime" property="intervalTime" />
+        <result column="maxCount" property="maxCount" />
+        <result column="totalMaxCount" property="totalMaxCount" />
+        <result column="isActive" property="templateStatus" />
+        <result column="callerId" property="callerId" />
+        <result column="insertTime" property="applyTime" />
+        <result column="updateTime" property="approveTime" />
+        <result column="templateAlias" property="templateAlias" />
+    </resultMap>
+
+    <select id="getTemplateCheckList" parameterType="Integer" resultMap="TemplateCheckList">
+        select * from messagetemplate
+        <where>
+            <if test="departmentId != null">
+                and DepartmentID= #{departmentId}
+            </if>
+            <if test="businessId != null">
+                and businessId= #{businessId}
+            </if>
+            <if test="messageKind != null">
+                and MessageKind= #{messageKind}
+            </if>
+            <if test="templateStatus != null">
+                and isActive= #{templateStatus}
+            </if>
+
+            <if test="templateAlias != null">
+                and templateAlias= #{templateAlias}
+            </if>
+            and isActive in (0,1)
+            order by InsertTime desc  limit #{page.pageNum,jdbcType=INTEGER},#{page.pageSize,jdbcType=INTEGER}
+        </where>
+
+    </select>
+<!-- 修改模板启用，禁用
+    <update id="editMessageTemplate">
+        UPDATE MessageTemplate
+        SET  IsActive=#{templateStatus},updateTime = NOW(),operator=#{operator}
+        WHERE TemplateId=#{templateId}
+    </update>
+-->
+    <!-- 修改模板信息 -->
+    <update id="editTemplateInfo" parameterType="com.ppdai.ac.sms.contract.model.vo.TemplateCheckVo">
+        UPDATE MessageTemplate
+        SET updateTime = NOW(),
+        <if test="departmentId != null">
+            departmentId= #{departmentId},
+        </if>
+        <if test="callerId != null">
+            callerId= #{callerId},
+        </if>
+        <if test="businessId != null">
+             businessId= #{businessId},
+        </if>
+        <if test="messageKind != null">
+             messageKind= #{messageKind},
+        </if>
+        <if test="templateStatus != null">
+             isActive= #{templateStatus},
+        </if>
+        <if test="templateContent != null">
+             Content= #{templateContent},
+        </if>
+        <if test="intervalTime != null">
+             intervalTime= #{intervalTime},
+        </if>
+        <if test="totalMaxCount != null">
+             totalMaxCount= #{totalMaxCount},
+        </if>
+        <if test="maxCount != null">
+             maxCount= #{maxCount},
+        </if>
+        FilterRule=3
+        WHERE TemplateId=#{templateId}
+    </update>
+
+    <select id="getTemplateList"  resultType="com.ppdai.ac.sms.contract.model.entity.MessageTemplateDTO">
+        select * FROM messagetemplate
+    </select>
+
+    <select id="getTemplateById"  resultType="com.ppdai.ac.sms.contract.model.entity.MessageTemplateDTO">
+        select * FROM messagetemplate where isActive=1 and templateId=#{templateId}
+    </select>
+
+</mapper>

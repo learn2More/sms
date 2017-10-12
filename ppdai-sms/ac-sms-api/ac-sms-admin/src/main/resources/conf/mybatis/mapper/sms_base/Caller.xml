@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ppdai.ac.sms.contract.dao.mapper.smsbase.CallerMapper">
+
+    <insert id="saveCaller" parameterType="com.ppdai.ac.sms.contract.model.vo.CallerVo" useGeneratedKeys="true" keyProperty="callerId" keyColumn="callerId">
+        INSERT INTO Caller(CallerName,IpList,IsActive,InsertTime,updateTime)
+        VALUES(#{callerName},#{ipList},1,NOW(),NOW())
+    </insert>
+
+    <select id="getCallerList"  resultType="com.ppdai.ac.sms.contract.model.vo.CallerVo">
+        SELECT * FROM Caller WHERE IsActive =1 ORDER by InsertTime desc
+    </select>
+
+    <update id="editCaller">
+        UPDATE Caller
+        SET  CallerName=#{callerName} ,updateTime = NOW(),IpList = #{ipList}
+        WHERE CallerId=#{callerId}
+    </update>
+
+    <delete id="delCaller">
+        UPDATE Caller
+        SET  IsActive=0
+        WHERE CallerId=#{callerId}
+    </delete>
+
+    <select id="findCallerById" parameterType="Integer"  resultType="com.ppdai.ac.sms.contract.model.vo.CallerVo">
+        SELECT *  FROM Caller WHERE callerId = #{callerId} and IsActive =1
+    </select>
+</mapper>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ppdai.ac.sms.api.gateway.dao.mapper.smsbase.BlackListMapper">
+
+    <select id="getBlackListByfeature" parameterType="String"
+            resultType="com.ppdai.ac.sms.api.gateway.model.entity.BlackListDTO">
+        SELECT * FROM BlackList WHERE Feature = #{feature} AND IsActive =1 LIMIT 1
+    </select>
+    <insert id="importBlackList" parameterType="java.util.List">
+        <![CDATA[INSERT INTO BlackList(feature,createType,remark,isActive,insertTime,updateTime)
+        VALUES
+        ]]>
+        <foreach collection="blacklist" item="item" index="index" separator=",">
+            (#{item.feature},#{item.createType},#{item.remark},1,NOW(),NOW())
+        </foreach>
+    </insert>
+</mapper>

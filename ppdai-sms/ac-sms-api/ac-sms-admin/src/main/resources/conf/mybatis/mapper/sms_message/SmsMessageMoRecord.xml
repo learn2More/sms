@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ppdai.ac.sms.contract.dao.mapper.smsmessage.MessagemoRecordMapper">
+
+    <resultMap id="messageMoRecordMap" type="com.ppdai.ac.sms.contract.model.vo.MessageUpRecordVo">
+        <id column="MoRecordId" property="recordId" />
+        <result column="Sender" property="mobile" />
+        <result column="Content" property="content" />
+        <result column="ChannelNo" property="providerId" />
+        <result column="ExtendNo" property="extendNo" />
+        <result column="InsertTime" property="insertTime" />
+        <result column="reportTime" property="reportTime" />
+    </resultMap>
+    <select id="getMessageMoRecordList" parameterType="com.ppdai.ac.sms.contract.request.messagerecord.MessageRecordRequest" resultMap="messageMoRecordMap">
+        select * from smsmessagemorecord
+        <where>
+            insertTime BETWEEN #{beginTime} AND #{endTime}
+
+            <if test="mobile != null">
+                and Sender= #{mobile}
+            </if>
+            <if test="providerId != null">
+                and ChannelNo= #{providerId}
+            </if>
+            limit #{page.pageNum,jdbcType=INTEGER},#{page.pageSize,jdbcType=INTEGER}
+        </where>
+    </select>
+
+    <select id="getMessageMoRecordCount" parameterType="com.ppdai.ac.sms.contract.request.messagerecord.MessageRecordRequest"  resultType="int">
+        select count(*) from smsmessagemorecord
+        <where>
+            insertTime BETWEEN #{beginTime} AND #{endTime}
+
+            <if test="mobile != null">
+                and Sender= #{mobile}
+            </if>
+            <if test="providerId != null">
+                and ChannelNo= #{providerId}
+            </if>
+        </where>
+    </select>
+</mapper>

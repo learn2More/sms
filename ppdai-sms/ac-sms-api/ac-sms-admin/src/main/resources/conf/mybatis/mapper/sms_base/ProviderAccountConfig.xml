@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ppdai.ac.sms.contract.dao.mapper.smsbase.ProviderConfigMapper">
+
+    <insert id="batchSaveProviderConfig" parameterType="list" >
+        INSERT INTO provideraccountconfig(ProviderId,ConfigKey,ConfigValue,IsActive,InsertTime,updateTime)
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.providerId},#{item.configKey},#{item.configValue},1,NOW(),NOW())
+        </foreach>
+    </insert>
+
+    <insert id="saveProviderConfig" parameterType="com.ppdai.ac.sms.contract.model.entity.ProviderConfigDTO" useGeneratedKeys="true" keyProperty="providerId" keyColumn="ConfigId" >
+        INSERT INTO provideraccountconfig(ProviderId,ConfigKey,ConfigValue,IsActive,InsertTime,updateTime)
+        values (#{providerId},#{configKey},#{configValue},1,NOW(),NOW())
+    </insert>
+
+    <select id="getConfigByProviderId" resultType="com.ppdai.ac.sms.contract.model.vo.ProviderConfigVo">
+        select * from provideraccountconfig
+        <where>
+            IsActive =1
+            <if test="providerId != null">
+                and providerId= #{providerId}
+            </if>
+        order by InsertTime desc
+        </where>
+    </select>
+
+
+    <!--更新服务商配置-->
+    <update id="editProviderConfig">
+            update provideraccountconfig
+            <set>
+                providerId=#{providerId},configKey=#{configKey},configValue=#{configValue},updateTime=NOW()
+            </set>
+            where configId = #{configId}
+    </update>
+
+    <!--批量+单条删除服务商配置-->
+    <update id="delProviderConfig" parameterType="java.util.List">
+        UPDATE provideraccountconfig
+        SET  IsActive=0,updateTime=NOW()
+        where ConfigId in
+        (
+        <foreach collection="list" index="index" item="item" separator=",">
+            #{item.configId}
+        </foreach>
+        )
+    </update>
+</mapper>

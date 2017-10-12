@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ppdai.ac.sms.contract.dao.mapper.smsbase.ActionLogMapper">
+
+    <select id="getActionLogList"  parameterType="Integer" resultType="com.ppdai.ac.sms.contract.model.entity.ActionLogDTO">
+        select * from actionlog
+        <where>
+            IsActive =1  and (insertTime BETWEEN #{beginTime} AND #{endTime})
+            <if test="userId != null">
+                and UserId= #{userId}
+            </if>
+            order by InsertTime desc limit #{page.pageNum,jdbcType=INTEGER},#{page.pageSize,jdbcType=INTEGER}
+        </where>
+    </select>
+
+    <select id="getActionLogCount" parameterType="Integer"  resultType="int">
+        SELECT count(*)  FROM actionlog
+        <where>
+            IsActive =1  and (insertTime BETWEEN #{beginTime} AND #{endTime})
+            <if test="userId != null">
+                and UserId= #{userId}
+            </if>
+        </where>
+    </select>
+
+    <insert id="saveActionlog" parameterType="com.ppdai.ac.sms.contract.model.entity.ActionLogDTO">
+        INSERT INTO actionlog(UserId,UserName,Action,ActionContent,IsActive,InsertTime,updateTime)
+        VALUES(#{userId},#{userName},#{action},#{actionContent},1,NOW(),NOW())
+    </insert>
+</mapper>

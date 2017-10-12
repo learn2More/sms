@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ppdai.ac.sms.contract.dao.mapper.smsmessage.MessageMapper">
+    <resultMap id="messageMap" type="com.ppdai.ac.sms.contract.model.vo.MessageVo">
+        <id column="messageId" property="messageId" />
+        <result column="Recipient" property="mobile" />
+        <result column="status" property="status" />
+        <result column="templateId" property="templateId" />
+        <result column="inserttime" property="insertTime" />
+        <result column="updatetime" property="updateTime" />
+
+        <result column="Content" property="content" />
+        <result column="CallerId" property="callerId" />
+        <result column="BusinessId" property="businessId" />
+    </resultMap>
+
+    <!--查询短信 or 语音消息记录-->
+    <select id="getMessageListByBusinessId"  resultMap="messageMap">
+        select *  from smsmessage
+        <where>
+            (insertTime BETWEEN #{beginTime} AND #{endTime})
+            <if test="mobile != null">
+                and Recipient= #{mobile}
+            </if>
+            <if test="status != null">
+                and status= #{status}
+            </if>
+            <if test="callerId != null">
+                and callerId= #{callerId}
+            </if>
+            <if test="businessId != null">
+                and businessId= #{businessId}
+            </if>
+            and BusinessId in
+            (
+            <foreach collection="list" index="index" item="item" separator=",">
+                #{item.businessId}
+            </foreach>
+            )
+            ORDER BY InsertTime desc limit #{page.pageNum,jdbcType=INTEGER},#{page.pageSize,jdbcType=INTEGER}
+        </where>
+
+ </select>
+
+ <!--查询短信 or 语音消息记录-->
+    <select id="getMessageCount" parameterType="com.ppdai.ac.sms.contract.request.messagerecord.MessageRecordRequest" resultType="int">
+        select count(*)  from smsmessage
+        <where>
+            (insertTime BETWEEN #{beginTime} AND #{endTime})
+
+            <if test="mobile != null">
+                and Recipient= #{mobile}
+            </if>
+            <if test="status != null">
+                and status= #{status}
+            </if>
+            <if test="callerId != null">
+                and callerId= #{callerId}
+            </if>
+            <if test="businessId != null">
+                and businessId= #{businessId}
+            </if>
+            and BusinessId in
+            (
+            <foreach collection="list" index="index" item="item" separator=",">
+                #{item.businessId}
+            </foreach>
+            )
+        </where>
+    </select>
+
+
+
+    <!--查询黑名单拦截记录-->
+    <select id="getInterceptRecordList" parameterType="com.ppdai.ac.sms.contract.request.messagerecord.MessageRecordRequest" resultMap="messageMap">
+        select *  from smsmessage where Status=3 and (insertTime BETWEEN #{beginTime} AND #{endTime})
+        <choose>
+            <when test="mobile != null">
+                Recipient= #{mobile}
+            </when>
+            <when test="messageKind != null">
+                and ContentType=#{messageKind}
+            </when>
+            <when test="providerId != null">
+                and providerId=#{providerId}
+            </when>
+        </choose>
+        ORDER BY InsertTime desc limit #{page.pageNum,jdbcType=INTEGER},#{page.pageSize,jdbcType=INTEGER}
+    </select>
+
+    <!--查询黑名单拦截记录总条数-->
+    <select id="getInterceptRecordCount" parameterType="com.ppdai.ac.sms.contract.request.messagerecord.MessageRecordRequest"  resultType="int">
+        select count(*)  from smsmessage where Status=3 and (insertTime BETWEEN #{beginTime} AND #{endTime})
+        <choose>
+            <when test="mobile != null">
+                Recipient= #{mobile}
+            </when>
+            <when test="messageKind != null">
+                and ContentType=#{messageKind}
+            </when>
+            <when test="providerId != null">
+                and providerId=#{providerId}
+            </when>
+        </choose>
+    </select>
+</mapper>

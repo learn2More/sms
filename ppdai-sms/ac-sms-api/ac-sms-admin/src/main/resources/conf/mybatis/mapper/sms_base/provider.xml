@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ppdai.ac.sms.contract.dao.mapper.smsbase.ProviderMapper">
+
+    <!--<select id="findDepartmentById" parameterType="Integer"  resultType="com.ppdai.ac.sms.contract.model.entity.DepartmentDTO">-->
+        <!--SELECT *  FROM department WHERE DepartmentId = #{departmentId}-->
+    <!--</select>-->
+
+    <insert id="saveProvider" parameterType="com.ppdai.ac.sms.contract.model.vo.ProviderVo" useGeneratedKeys="true" keyProperty="providerId"  keyColumn="ConfigId" >
+        INSERT INTO provider(ProviderName,ProviderBusiness,MessageKind,ProviderProtocol,IsActive,InsertTime,updateTime)
+        VALUES(#{providerName},#{messageType},#{messageKind},#{providerProtocol},1,#{insertTime},NOW())
+    </insert>
+
+    <resultMap id="providerMap" type="com.ppdai.ac.sms.contract.model.vo.ProviderVo">
+        <result column="ProviderId" property="providerId" />
+        <result column="ProviderName" property="providerName" />
+        <result column="ProviderBusiness" property="messageType" />
+        <result column="MessageKind" property="messageKind" />
+        <result column="ProviderProtocol" property="providerProtocol" />
+        <result column="InsertTime" property="insertTime" />
+        <result column="UpdateTime" property="updateTime" />
+    </resultMap>
+
+    <select id="getProviders" parameterType="Integer" resultMap="providerMap">
+        select * from provider
+        <where>
+            IsActive =1
+            <if test="providerBusiness != null">
+                and providerBusiness= #{providerBusiness}
+            </if>
+            <if test="messageKind != null">
+                and messageKind= #{messageKind}
+            </if>
+            order by InsertTime desc
+        </where>
+    </select>
+
+    <select id="getProviderCount"  parameterType="Integer"  resultType="int">
+        select count(*)  from provider
+        <where>
+            IsActive =1
+            <if test="providerBusiness != null">
+                and providerBusiness= #{providerBusiness}
+            </if>
+            <if test="messageKind != null">
+                and messageKind= #{messageKind}
+            </if>
+        </where>
+    </select>
+
+    <select id="getProviderList"  resultMap="providerMap">
+        select *  from provider  where  IsActive=1
+
+    </select>
+
+    <update id="editProvider" parameterType="com.ppdai.ac.sms.contract.model.vo.ProviderVo">
+        UPDATE Provider
+        SET  ProviderName=#{providerName},ProviderBusiness =#{messageType},MessageKind =#{messageKind},
+        ProviderProtocol =#{providerProtocol},updateTime=NOW()
+        WHERE ProviderId=#{providerId}
+    </update>
+
+    <update id="delProvider">
+        UPDATE Provider
+        SET  IsActive=0,updateTime=NOW()
+        WHERE ProviderId=#{providerId}
+    </update>
+</mapper>

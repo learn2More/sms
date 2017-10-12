@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ppdai.ac.sms.contract.dao.mapper.smsmessage.MessageReportMapper">
+
+    <resultMap id="messageReportMap" type="com.ppdai.ac.sms.contract.model.vo.MessageReportVo">
+
+        <result column="reportTime" property="reportTime" />
+
+    </resultMap>
+    <!--查询消息回执记录-->
+    <select id="getMessageReportByRecordId"  resultMap="messageReportMap">
+        select MAX(reportTime) as reportTime from smsmessagereport
+        where (insertTime BETWEEN #{beginTime} AND #{endTime}) and messageId =#{messageId}
+    </select>
+
+    <select id="getMessageReportCountByRecordId"  resultType="int">
+        select count(*) from smsmessagerecord where (insertTime BETWEEN #{beginTime} AND #{endTime}) and RecordId=#{recordId}
+    </select>
+    <select id="getReportTimeByRecordId"  resultType="java.sql.Timestamp">
+        select ReportTime from smsmessagereport where RecordId=#{recordId} and (insertTime BETWEEN #{beginTime} AND #{endTime})
+        ORDER BY InsertTime desc
+    </select>
+
+</mapper>

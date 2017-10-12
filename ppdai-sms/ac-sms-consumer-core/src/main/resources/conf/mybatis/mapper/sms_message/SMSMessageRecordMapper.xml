@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ppdai.ac.sms.consumer.core.dao.mapper.smsmessage.SMSMessageRecordMapper">
+
+    <insert id="save" parameterType="com.ppdai.ac.sms.consumer.core.model.entity.SMSMessageRecordDTO">
+        INSERT INTO SMSMessageRecord(recordId,messageId,providerId,messageCount,status,receiveTime,sendTime,isActive,insertTime,updateTime)
+        VALUES(#{recordId},#{messageId},#{providerId},#{messageCount},#{status},#{receiveTime},#{sendTime},1,#{insertTime},#{updateTime})
+    </insert>
+    <update id="updateRecord">
+        UPDATE SMSMessageRecord
+        SET status=#{smsMessageRecordDTO.status},
+        sendResult=#{smsMessageRecordDTO.sendResult},
+        responseTime=#{smsMessageRecordDTO.responseTime},
+        updateTime=NOW()
+        WHERE recordId=#{smsMessageRecordDTO.recordId} AND insertTime BETWEEN #{startTime} AND #{endTime}
+    </update>
+    <select id="querySendRecordCnt" resultType="Integer">
+        SELECT COUNT(*) FROM SMSMessageRecord where messageId=#{messageId}
+        AND insertTime BETWEEN #{startTime} AND #{endTime} AND isActive=1
+    </select>
+
+    <select id="findByRecordId" resultType="com.ppdai.ac.sms.consumer.core.model.entity.SMSMessageRecordDTO">
+        SELECT * FROM SMSMessageRecord where recordId=#{recordId}
+        AND insertTime BETWEEN #{startTime} AND #{endTime} AND isActive=1
+    </select>
+
+    <select id="querySendRecord" resultType="com.ppdai.ac.sms.consumer.core.model.entity.SMSMessageRecordDTO">
+        SELECT * FROM SMSMessageRecord where messageId=#{messageId}
+        AND insertTime BETWEEN #{startTime} AND #{endTime} AND isActive=1
+    </select>
+</mapper>

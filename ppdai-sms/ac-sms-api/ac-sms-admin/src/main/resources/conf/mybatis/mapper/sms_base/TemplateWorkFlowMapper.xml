@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ppdai.ac.sms.contract.dao.mapper.smsbase.TemplateWorkFlowMapper">
+
+    <insert id="saveTemplateApply" parameterType="com.ppdai.ac.sms.contract.model.entity.MessageApplyDTO">
+            INSERT INTO MessageApply(applyID,businessId,callerId,userId,userName,applyTitle,applicant,applicantEmail,applyDepartmentId,templateContent,messageKind,reason,applyStatus,isActive,insertTime,updateTime,MaxCount,IntervalTime,TotalMaxCount,approverJobId)
+        VALUES(#{applyID},#{businessId},#{callerId},#{userId},#{applicant},#{applyTitle},#{applicant},#{applicantEmail},#{applyDepartmentId},#{templateContent},#{messageKind},"",0,1,NOW(),NOW(),#{maxCount},#{intervalTime},#{totalMaxCount},#{approverJobId})
+    </insert>
+
+
+
+    <resultMap id="messageApply" type="com.ppdai.ac.sms.contract.model.vo.TemplateApproveVo">
+        <result column="applyTitle" property="title" />
+        <result column="departmentId" property="departmentId" />
+        <result column="applicant" property="applicant" />
+        <result column="applicantEmail" property="applicantEmail" />
+        <result column="businessId" property="businessId" />
+        <result column="messageKind" property="messageKind" />
+        <result column="callerId" property="callerId" />
+        <result column="content" property="content" />
+        <result column="maxCount" property="maxCount" />
+        <result column="TotalMaxCount" property="totalMaxCount" />
+        <result column="IntervalTime" property="intervalTime" />
+        <result column="applyID" property="templateId" />
+        <result column="applyStatus" property="approveStatus" />
+        <result column="insertTime" property="applyTime" />
+        <result column="reason" property="reason" />
+    </resultMap>
+
+    <select id="getTemplateApproveList" parameterType="Integer" resultMap="messageApply">
+        SELECT t_apply.MaxCount as maxCount,t_apply.IntervalTime as IntervalTime,t_apply.TotalMaxCount as TotalMaxCount,t_apply.TemplateContent as content,
+        t_apply.ApplicantEmail as applicantEmail,t_apply.ApplyDepartmentID as departmentId,t_apply.Applyid as applyID,t_apply.applyTitle as applyTitle,
+        t_apply.applicant as applicant,t_apply.BusinessId  as businessId,t_apply.messageKind as messageKind,t_apply.CallerId as callerId,
+        t_apply.applyStatus as applyStatus,t_apply.insertTime as insertTime,t_apply.Reason as reason
+        FROM MessageApply as t_apply
+            <where>
+                t_apply.IsActive =1
+                <if test="approveStatus != null">
+                    and ApplyStatus= #{approveStatus}
+                </if>
+                and ApplyStatus in (0,1,2)
+                and t_apply.ApplyDepartmentID in
+                (
+                <foreach collection="list" index="index" item="item" separator=",">
+                    #{item}
+                </foreach>
+                )
+                order by t_apply.InsertTime desc  limit #{page.pageNum,jdbcType=INTEGER},#{page.pageSize,jdbcType=INTEGER}
+            </where>
+    </select>
+
+    <select id="getTemplateApproveCount" parameterType="Integer"  resultType="int">
+        SELECT count(*)  FROM MessageApply
+        <where>
+            IsActive =1
+            <if test="approveStatus != null">
+                and ApplyStatus= #{approveStatus}
+            </if>
+            and ApplyStatus in (0,1,2)
+            AND ApplyDepartmentID in
+            (
+            <foreach collection="list" index="index" item="item" separator=",">
+                #{item}
+            </foreach>
+            )
+        </where>
+    </select>
+
+    <select id="findTemplateApplyById" parameterType="Integer"  resultType="com.ppdai.ac.sms.contract.model.entity.MessageApplyDTO">
+        SELECT *  FROM MessageApply WHERE ApplyID = #{applyId}
+    </select>
+
+    <update id="editMessageApply">
+        UPDATE MessageApply
+        SET  ApplyStatus=#{approveStatus} ,updateTime = NOW(),Reason = #{reason}
+        WHERE ApplyID=#{applyId}
+    </update>
+
+    <select id="getTemplateByparam" parameterType="Integer"  resultType="int">
+        SELECT count(*)  FROM MessageApply
+        <where>
+            IsActive =1
+            <if test="businessId != null">
+                and businessId= #{businessId}
+            </if>
+            <if test="callerId != null">
+                and callerId= #{callerId}
+            </if>
+        </where>
+    </select>
+
+    <!-- 根据审批人工号查询部门id -->
+    <select id="findDepartmentsByJobId" parameterType="String"  resultType="java.lang.Integer">
+        select ApplyDepartmentID FROM MessageApply WHERE approverJobId=#{jobId} and IsActive=1
+    </select>
+
+</mapper>

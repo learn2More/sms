@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ppdai.ac.sms.contract.dao.mapper.smsbase.MessageBusinessMapper">
+
+    <select id="getMessageBusinessList"  resultType="com.ppdai.ac.sms.contract.model.vo.MessageBusinessVo">
+        SELECT * FROM MessageBusiness WHERE IsActive =1 order by insertTime desc
+    </select>
+
+    <insert id="saveMessageBusiness" parameterType="com.ppdai.ac.sms.contract.model.entity.MessageBusinessDTO"   useGeneratedKeys="true" keyProperty="businessId" keyColumn="businessId">
+        INSERT INTO MessageBusiness(BusinessName,BusinessAlias,MessageType,totalMaxCount,verifyMaxCount,expireSecond,IsActive,InsertTime,updateTime)
+        VALUES(#{businessName},#{businessAlias},#{messageType},#{totalMaxCount},#{verifyMaxCount},#{expireSecond},1,NOW(),NOW())
+    </insert>
+
+    <update id="editMessageBusiness" parameterType="com.ppdai.ac.sms.contract.model.entity.MessageBusinessDTO">
+        UPDATE MessageBusiness
+        SET  BusinessName=#{businessName} ,BusinessAlias = #{businessAlias},MessageType = #{messageType},totalMaxCount = #{totalMaxCount},verifyMaxCount = #{verifyMaxCount},expireSecond = #{expireSecond},updateTime = NOW()
+        WHERE BusinessId=#{businessId}
+    </update>
+
+    <delete id="delMessageBusiness">
+        UPDATE MessageBusiness
+        SET  IsActive=0
+        WHERE BusinessId=#{businessId}
+    </delete>
+
+    <select id="findMessageBusinessById" parameterType="Integer"  resultType="com.ppdai.ac.sms.contract.model.vo.MessageBusinessVo">
+        SELECT *  FROM MessageBusiness WHERE BusinessId = #{businessId} and isactive=1
+    </select>
+
+    <select id="getBusinessListByMessageType" parameterType="Integer"  resultType="com.ppdai.ac.sms.contract.model.vo.MessageBusinessVo">
+        SELECT * FROM MessageBusiness WHERE IsActive =1 and MessageType=#{messageType}
+    </select>
+
+</mapper>

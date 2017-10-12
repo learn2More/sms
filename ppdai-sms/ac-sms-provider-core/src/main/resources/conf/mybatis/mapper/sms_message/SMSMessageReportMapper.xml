@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ppdai.ac.sms.provider.core.dao.mapper.smsmessage.SmsMessageReportMapper">
+   <insert id="saveMessageReport" parameterType="com.ppdai.ac.sms.provider.core.model.entity.SMSMessageReportDTO">
+      INSERT INTO smsmessagereport(
+      RecordId,
+      MessageId,
+      ProviderId,
+      Recipient,
+      ReportResult,
+      ReportStatus,
+      ReportTime,
+      ProviderMessage,
+      IsActive,
+      insertTime,
+      updateTime)
+        VALUES(
+        #{recordId},
+        #{messageId},
+        #{providerId},
+        #{recipient},
+        #{reportResult},
+        #{reportStatus},
+        #{reportTime},
+        #{providerMessage},
+        1,
+        #{insertTime},
+        #{updateTime})
+   </insert>
+</mapper>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ppdai.ac.sms.provider.core.dao.mapper.smsmessage.SmsMessageMapper">
+
+    <update id="updateStatusByMessageId">
+        update smsmessage
+        set  status = #{status,jdbcType=INTEGER}
+        <where>
+              messageId = #{messageId}
+        </where>
+    </update>
+
+    <select id="getMessageByMessageId"  resultType="com.ppdai.ac.sms.provider.core.model.entity.SMSMessageDTO">
+      SELECT * FROM smsmessage WHERE MessageId = #{messageId}  AND (insertTime BETWEEN #{startTime} AND #{endTime}) AND IsActive = 1 limit 1
+    </select>
+
+</mapper>

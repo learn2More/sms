@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ppdai.ac.sms.contract.dao.mapper.smsbase.BlackListMapper">
+
+    <resultMap id="blacklistMap" type="com.ppdai.ac.sms.contract.model.vo.BlackListVo">
+        <result column="ListId" property="listId" />
+        <result column="Feature" property="mobile" />
+        <result column="CreateType" property="createType" />
+        <result column="Remark" property="remark" />
+        <result column="InsertTime" property="insertTime" />
+        <result column="UpdateTime" property="updateTime" />
+    </resultMap>
+
+    <select id="getBlackListByparam"  resultMap="blacklistMap">
+        select * from blacklist
+        <where>
+            IsActive =1
+            <if test="mobile != null">
+                and Feature= #{mobile}
+            </if>
+            <if test="beginTime != null and test= endTime != null">
+                and (insertTime BETWEEN #{beginTime} AND #{endTime})
+            </if>
+            <if test="createType != null">
+                and createType= #{createType}
+            </if>
+            order by InsertTime desc limit #{page.pageNum,jdbcType=INTEGER},#{page.pageSize,jdbcType=INTEGER}
+        </where>
+    </select>
+
+    <select id="getBlackListCount" parameterType="Integer"  resultType="int">
+        SELECT count(*)  FROM blacklist
+        <where>
+            IsActive =1
+            <if test="mobile != null">
+                and Feature= #{mobile}
+            </if>
+            <if test="beginTime != null and test= endTime != null">
+                and (insertTime BETWEEN #{beginTime} AND #{endTime})
+            </if>
+            <if test="createType != null">
+                and createType= #{createType}
+            </if>
+        </where>
+    </select>
+
+    <delete id="delBlackList">
+    UPDATE blacklist
+    SET  IsActive=0
+    WHERE listId=#{listId}
+    </delete>
+
+    <!--修改黑名单-->
+    <update id="editBlackList">
+    UPDATE blacklist
+    SET  Feature=#{mobile} ,updateTime = NOW(),Remark = #{remark}
+    WHERE ListId=#{listId}
+    </update>
+
+    <!--批量添加黑名单   Feature =VALUES(Feature),-->
+    <insert id="batchSaveBlack" parameterType="list" >
+    insert into blacklist(Feature,CreateType,Remark,IsActive,InsertTime,UpdateTime)
+    values
+    <foreach collection="list" item="item" index="index" separator=",">
+        (#{item.mobile},1,#{item.remark},1,NOW(),NOW())
+    </foreach>
+        on duplicate key update
+        Remark=VALUES(remark),
+        IsActive=1,
+        UpdateTime=NOW()
+    </insert>
+
+    <!--单条添加黑名单        Feature =VALUES(Feature),-->
+    <insert id="saveBlack" parameterType="com.ppdai.ac.sms.contract.model.vo.BlackListVo" useGeneratedKeys="true" keyProperty="listId" keyColumn="ListId">
+        INSERT INTO blacklist (Feature,CreateType,Remark,IsActive,InsertTime,UpdateTime)
+        VALUES(#{mobile},1,#{remark},1,NOW(),NOW())
+         on duplicate key update
+        Remark=VALUES(remark),
+        IsActive=1,
+        UpdateTime=NOW()
+    </insert>
+    <!--修改黑名单之前，查询该手机号是否存在-->
+    <select id="findBlackListByMobile" resultMap="blacklistMap">
+        select * from blacklist where Feature=#{mobile} and ListId !=#{listId}
+    </select>
+</mapper>

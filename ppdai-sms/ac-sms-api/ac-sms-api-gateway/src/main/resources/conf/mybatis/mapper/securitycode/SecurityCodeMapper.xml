@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ppdai.ac.sms.api.gateway.dao.mapper.securitycode.SecurityCodeMapper">
+
+    <insert id="createSecurityCode" parameterType="com.ppdai.ac.sms.api.gateway.model.entity.SecurityCodeDTO">
+        INSERT INTO SecurityCode(appId,codeKey,codeValue,expireTimestamp,isActive,insertTime,updateTime)
+        VALUES(#{appId},#{codeKey},#{codeValue},#{expireTimeStamp},1,NOW(),NOW())
+    </insert>
+    <select id="getSecurityCodeWithLastOne" parameterType="String"
+            resultType="com.ppdai.ac.sms.api.gateway.model.entity.SecurityCodeDTO">
+        SELECT * FROM SecurityCode WHERE appId = #{appId} AND codeKey = #{codeKey} AND IsActive = 1 order by codeId desc LIMIT 1
+    </select>
+    <update id="delSecurityCode">
+        UPDATE SecurityCode
+        SET  isActive=0,updateTime = NOW()
+        WHERE appId=#{appId} AND codeKey = #{codeKey} AND codeValue=#{codeValue}
+    </update>
+</mapper>

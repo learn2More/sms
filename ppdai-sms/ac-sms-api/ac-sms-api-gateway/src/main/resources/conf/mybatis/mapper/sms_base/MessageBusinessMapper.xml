@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ppdai.ac.sms.api.gateway.dao.mapper.smsbase.MessageBusinessMapper">
+
+    <select id="getBussinessByAlias" parameterType="String"
+            resultType="com.ppdai.ac.sms.api.gateway.model.entity.MessageBusinessDTO">
+        SELECT * FROM MessageBusiness WHERE businessAlias = #{businessAlias} AND IsActive =1 LIMIT 1
+    </select>
+
+    <select id="getBussinessByAliasAndMessageType"
+            resultType="com.ppdai.ac.sms.api.gateway.model.entity.MessageBusinessDTO">
+        SELECT * FROM MessageBusiness WHERE businessAlias = #{businessAlias} AND MessageType=#{messageType} AND IsActive =1 LIMIT 1
+    </select>
+</mapper>

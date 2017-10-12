@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ppdai.ac.sms.contract.dao.mapper.smsbase.BusinessProviderMapper">
+
+    <!--根据业务编号查询通道-->
+    <select id="getBusinessProviderBybusinessId"  resultType="com.ppdai.ac.sms.contract.model.entity.BusinessProviderDTO">
+        SELECT * FROM businessprovider WHERE IsActive =1 and BusinessId=#{businessId} ORDER  by insertTime desc
+    </select>
+
+    <insert id="saveBusinessProvider" parameterType="com.ppdai.ac.sms.contract.model.entity.BusinessProviderDTO" useGeneratedKeys="true" keyProperty="BPId" keyColumn="BPId">
+       INSERT INTO businessprovider(BusinessId,ProviderId,MessageKind,Weight,Line,isActive,insertTime,updateTime)
+                   VALUES(#{businessId},#{providerId},#{messageKind},#{weight},#{line},1,NOW(),NOW())
+    </insert>
+
+    <update id="editBusinessProvider">
+        UPDATE businessprovider
+        SET  businessId=#{businessId},providerId=#{providerId},messageKind=#{messageKind},weight=#{weight},updateTime = NOW(),line = #{line}
+        WHERE BPId=#{BPId}
+    </update>
+
+    <delete id="delBusinessProvider">
+        UPDATE businessprovider
+        SET  IsActive=0
+        WHERE BPId=#{channelId}
+    </delete>
+</mapper>
